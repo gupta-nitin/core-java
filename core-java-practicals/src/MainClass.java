@@ -23,6 +23,7 @@ public class MainClass{
 	System.out.println("----------------------");
 	System.out.println("roll no of stud_obj_2 - " + stud_obj_2.getRoll_no());
 	System.out.println("var1 of stud_obj_2 - " + stud_obj_1.getVa1());
+	System.out.println("----------------------");
 	
 	}
 
