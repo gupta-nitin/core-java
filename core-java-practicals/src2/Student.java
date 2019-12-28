@@ -6,9 +6,18 @@ public class Student  extends Person{
 		
 		
 	public Student(int rollNo, String name){
+			super(name);
 			this.rollNo=rollNo;
 			setName(name);
+			System.out.prinln("Student constructor called");
 	}
+	
+		
+	public Student(){
+			rollNo = 0;
+			System.out.println("Student constructor called");
+	}
+	
 	
 	public int getRollNo(){
 		return rollNo;
