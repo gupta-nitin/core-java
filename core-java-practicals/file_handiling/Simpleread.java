@@ -4,7 +4,7 @@ class Simpleread{
 
     public static void main(String args[]){
 
-FileInputStream fin  =null;
+
    try(FileInputStream fin = new FileInputStream("c:/input.txt")){
 
 		int i;
