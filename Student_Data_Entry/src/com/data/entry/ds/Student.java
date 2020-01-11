@@ -1,5 +1,6 @@
 package com.data.entry.ds;
 
+import java.io.Serializable;
 
 /**
  * This class will hold student information for student-data-entry app
@@ -7,7 +8,7 @@ package com.data.entry.ds;
  * @author Nitin
  *
  */
-public class Student {
+public class Student implements Serializable{
 	
 	private String name;
 	private int age ;
