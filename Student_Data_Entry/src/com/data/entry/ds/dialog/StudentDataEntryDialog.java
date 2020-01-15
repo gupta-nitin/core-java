@@ -11,6 +11,7 @@ import java.util.List;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.dialogs.TitleAreaDialog;
 import org.eclipse.jface.viewers.ArrayContentProvider;
+import org.eclipse.jface.viewers.ColumnViewerToolTipSupport;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.swt.SWT;
@@ -34,11 +35,13 @@ import org.eclipse.swt.widgets.Text;
 
 import com.data.entry.ds.Gender;
 import com.data.entry.ds.Student;
+import com.data.entry.editing.NameEditingSupport;
 import com.data.entry.provider.AddressLableProvider;
 import com.data.entry.provider.AgeLableProvider;
 import com.data.entry.provider.ContactLabelProvider;
 import com.data.entry.provider.GenderLabelProvider;
 import com.data.entry.provider.NameLableProvider;
+import com.data.entry.utils.ValidationUtils;
 
 public class StudentDataEntryDialog extends TitleAreaDialog {
 
@@ -126,7 +129,16 @@ public class StudentDataEntryDialog extends TitleAreaDialog {
 	}
 
 	private void createTableViewer(Composite container_1) {
-		studentTableViewer = new TableViewer(container_1);
+		studentTableViewer = new TableViewer(container_1){
+			@Override
+			public void refresh() {
+				ValidationUtils.ValidateStudentList(studentList);
+				super.refresh();
+			}
+		};
+		
+		
+		ColumnViewerToolTipSupport.enableFor(studentTableViewer);
 		Table studentTable = studentTableViewer.getTable();
 		GridData gridData = new GridData(SWT.FILL, SWT.FILL, true, true);
 		gridData.horizontalSpan = 2;
@@ -139,6 +151,7 @@ public class StudentDataEntryDialog extends TitleAreaDialog {
 		TableColumn nameColumn = nameColumnViewer.getColumn();
 		nameColumn.setText("Name");
 		nameColumn.setWidth(100);
+		nameColumnViewer.setEditingSupport(new NameEditingSupport(nameColumnViewer.getViewer(), studentTableViewer));
 
 		TableViewerColumn ageColumnViewer = new TableViewerColumn(studentTableViewer, SWT.NONE);
 		ageColumnViewer.setLabelProvider(new AgeLableProvider());
@@ -157,6 +170,7 @@ public class StudentDataEntryDialog extends TitleAreaDialog {
 		TableColumn genderColumn = genderColumnViewer.getColumn();
 		genderColumn.setText("Gender");
 		genderColumn.setWidth(100);
+		genderColumnViewer.setEditingSupport(new GenderEditingSupport(genderColumnViewer.getViewer(), studentTableViewer));
 
 		TableViewerColumn addressColumnViewer = new TableViewerColumn(studentTableViewer, SWT.NONE);
 		addressColumnViewer.setLabelProvider(new AddressLableProvider());
@@ -165,7 +179,9 @@ public class StudentDataEntryDialog extends TitleAreaDialog {
 		addressColumn.setWidth(215);
 
 		studentTableViewer.setContentProvider(new ArrayContentProvider());
+		ValidationUtils.ValidateStudentList(studentList);
 		studentTableViewer.setInput(studentList);
+	
 
 	}
 

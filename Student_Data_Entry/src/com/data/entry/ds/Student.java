@@ -1,6 +1,9 @@
 package com.data.entry.ds;
 
 import java.io.Serializable;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * This class will hold student information for student-data-entry app
@@ -15,7 +18,7 @@ public class Student implements Serializable{
 	private long contact;
 	private Gender gender;
 	private String address;
-	
+	private Map<ValidationKeys, String> errorMessages = new HashMap<>(); 
 	
 	public Student(String name, int age, long contact, Gender gender, String address){
 		this.name = name;
@@ -63,6 +66,10 @@ public class Student implements Serializable{
 	
 	public String getAddress(){
 		return this.address;
+	}
+	
+	public Map<ValidationKeys, String> getErrorMessages() {
+		return errorMessages;
 	}
 
 }
