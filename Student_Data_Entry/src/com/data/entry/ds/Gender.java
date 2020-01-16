@@ -3,7 +3,8 @@ package com.data.entry.ds;
 public enum Gender {
 
 	MALE("Male"),
-	FEMALE("Female");
+	FEMALE("Female"),
+	OThER("other");
 	
 	private String value;
 	

@@ -12,6 +12,9 @@ import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.dialogs.TitleAreaDialog;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ColumnViewerToolTipSupport;
+import org.eclipse.jface.viewers.ComboViewer;
+import org.eclipse.jface.viewers.LabelProvider;
+import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.swt.SWT;
@@ -24,9 +27,9 @@ import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
-import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Table;
@@ -35,12 +38,14 @@ import org.eclipse.swt.widgets.Text;
 
 import com.data.entry.ds.Gender;
 import com.data.entry.ds.Student;
+import com.data.entry.editing.GenderCellEditing2;
 import com.data.entry.editing.NameEditingSupport;
 import com.data.entry.provider.AddressLableProvider;
 import com.data.entry.provider.AgeLableProvider;
 import com.data.entry.provider.ContactLabelProvider;
 import com.data.entry.provider.GenderLabelProvider;
 import com.data.entry.provider.NameLableProvider;
+import com.data.entry.threading.WriteThread;
 import com.data.entry.utils.ValidationUtils;
 
 public class StudentDataEntryDialog extends TitleAreaDialog {
@@ -49,7 +54,7 @@ public class StudentDataEntryDialog extends TitleAreaDialog {
 	private Text txtName;
 	private Text txtAge;
 	private Text txtContact;
-	private Combo combogender;
+	private ComboViewer combogender;
 	private List<Student> studentList;
 	private TableViewer studentTableViewer;
 	private StyledText txtAddress;
@@ -61,6 +66,7 @@ public class StudentDataEntryDialog extends TitleAreaDialog {
 	}
 
 	private List<Student> readDataFromFile() {
+		
 		try (FileInputStream fileInputStream = new FileInputStream(appOutputFilePath);
 				ObjectInputStream objectInputStream = new ObjectInputStream(fileInputStream)) {
 
@@ -170,7 +176,7 @@ public class StudentDataEntryDialog extends TitleAreaDialog {
 		TableColumn genderColumn = genderColumnViewer.getColumn();
 		genderColumn.setText("Gender");
 		genderColumn.setWidth(100);
-		genderColumnViewer.setEditingSupport(new GenderEditingSupport(genderColumnViewer.getViewer(), studentTableViewer));
+		genderColumnViewer.setEditingSupport(new GenderCellEditing2(genderColumnViewer.getViewer(), studentTableViewer));
 
 		TableViewerColumn addressColumnViewer = new TableViewerColumn(studentTableViewer, SWT.NONE);
 		addressColumnViewer.setLabelProvider(new AddressLableProvider());
@@ -214,7 +220,7 @@ public class StudentDataEntryDialog extends TitleAreaDialog {
 				long contact = Long.parseLong(txtContact.getText());
 				Gender gender = getSelectedGender();
 				String address = txtAddress.getText();
-				Student student = new Student(name, age, contact, gender, address);
+				Student student = new Student(name, age, contact,gender, address);
 				studentList.add(student);
 				studentTableViewer.refresh();
 				clearWidgets();
@@ -222,15 +228,8 @@ public class StudentDataEntryDialog extends TitleAreaDialog {
 			}
 
 			private Gender getSelectedGender() {
-				int selectionIndex = combogender.getSelectionIndex();
-				if (selectionIndex > -1) {
-					for (Gender gender : Gender.values()) {
-						if (gender.getValue().equalsIgnoreCase(combogender.getItem(selectionIndex))) {
-							return gender;
-						}
-					}
-				}
-				return null;
+				StructuredSelection selection =(StructuredSelection) combogender.getSelection();
+				return (Gender) selection.getFirstElement();
 			}
 		});
 	}
@@ -252,10 +251,14 @@ public class StudentDataEntryDialog extends TitleAreaDialog {
 		lblGender.setText("Gender");
 		lblGender.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false));
 
-		combogender = new Combo(container_1, SWT.DROP_DOWN);
-		combogender.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
-		combogender.setItems(new String[] { Gender.MALE.getValue(), Gender.FEMALE.getValue() });
+//		combogender = new Combo(container_1, SWT.DROP_DOWN);
+//		combogender.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
+//		combogender.setItems(new String[] { Gender.MALE.getValue(), Gender.FEMALE.getValue(), Gender.OTher.value() });
 
+		combogender = new ComboViewer(container_1, SWT.READ_ONLY);
+		combogender.setLabelProvider(new LabelProvider());
+		combogender.setContentProvider(new ArrayContentProvider());
+		combogender.setInput(Gender.values());
 	}
 
 	private void createContactWidgets(Composite container_1) {
@@ -310,7 +313,7 @@ public class StudentDataEntryDialog extends TitleAreaDialog {
 		txtName.setText("");
 		txtAge.setText("");
 		txtContact.setText("");
-		combogender.deselectAll();
+		combogender.refresh();
 		txtAddress.setText("");
 	}
 
@@ -332,14 +335,11 @@ public class StudentDataEntryDialog extends TitleAreaDialog {
 	}
 
 	private void writeDataToOutputFile() {
-		try {
-			FileOutputStream outFileStream = new FileOutputStream(new File(appOutputFilePath));
-			ObjectOutputStream objectOutputStream = new ObjectOutputStream(outFileStream);
-			objectOutputStream.writeObject(studentList);
-		} catch (Exception exception) {
-			MessageDialog.openError(getParentShell(), "Failed",
-					"Failed to write data to output file - " + exception.getMessage());
-			exception.printStackTrace();
-		}
-	}
+				Thread writethread = new WriteThread(studentList, appOutputFilePath);
+				writethread.run();
+	}	
 }
+
+
+//Thread writethread = new WriteThread(studentList,appOutputFilePath);
+//writethread.run()
