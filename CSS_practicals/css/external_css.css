@@ -1,0 +1,8 @@
+body
+   { 
+	
+	background-image:url('../images/sample.png');
+/*	background-repeat:no-repeat;*/
+   }
+p { color:red; }
+h3{ color: green; }

@@ -334,10 +334,23 @@ public class StudentDataEntryDialog extends TitleAreaDialog {
 
 	}
 
+	
 	private void writeDataToOutputFile() {
+		try {
+			FileOutputStream outFileStream = new FileOutputStream(new File(appOutputFilePath));
+			ObjectOutputStream objectOutputStream = new ObjectOutputStream(outFileStream);
+			objectOutputStream.writeObject(studentList);
+		} catch (Exception exception) {
+			MessageDialog.openError(new Shell(), "Failed",
+					"Failed to write data to output file - " + exception.getMessage());
+			exception.printStackTrace();
+		}
+	}
+	
+	/*private void writeDataToOutputFile() {
 				Thread writethread = new WriteThread(studentList, appOutputFilePath);
 				writethread.run();
-	}	
+	}*/	
 }
 
 
