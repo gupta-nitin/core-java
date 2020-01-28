@@ -1,0 +1,41 @@
+<html> 
+<head> 
+<title>This is a JavaScript example</title> 
+<script language="javascript">
+
+document.write("<h1>Hello dolly!"+" </h1>”);
+</script> 
+</head> 
+<body> 
+<script language="javascript">
+
+document.write( "Hi, man! "+"</br>" );
+document.write( "How are you."+"</br>");
+
+var x ="";
+var d = new Date();
+var day=d.getDay();
+
+switch (day){
+case 0:  x="Today it's Sunday";
+		break;
+case 1:  x="Today it's Monday";
+		break;
+case 2:  x="Today it's Tuesday";
+	    break;
+case 3:  x="Today it's Wednesday";
+		break;
+case 4:  x="Today it's Thursday"; 
+		break;
+case 5:  x="Today it's Friday";  
+		break;
+case 6:  x="Today it's Saturday"; 
+		break;} 
+
+document.write( x );
+</script>
+
+
+</body> 
+
+</html>
