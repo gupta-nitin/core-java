@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+	<head>
+            <script type="text/javascript">
+                function addFunction(a,b)
+                {
+					return parseInt(a)+parseInt(b);
+                }
+				
+				function updateParagraph(a,b){
+					var confirm_resullt = confirm("Do you want to proceed, it will change content of paragraph ?")
+					document.getElementById("para2").innerHTML="Confirm Box Output : " + confirm_resullt;
+					if(confirm_resullt){
+						document.getElementById("para1").innerHTML="Sum : " + addFunction(a,b);
+					}
+				}
+                 </script>
+       </head>
+	<body>
+	<input name="a" id="a" type="text"/>
+	<input name="b" id="b" type="text">
+	 <button onclick="updateParagraph(document.getElementById('a').value,document.getElementById('b').value)">Try it</button>
+	 <p id="para1">Sum : </p>
+	 <p id="para2">Confirm Box Output : </p>
+	</body>
+    </html> 
+
